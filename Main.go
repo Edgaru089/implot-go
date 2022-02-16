@@ -7,3 +7,14 @@ import "C"
 func Version() string {
 	return C.GoString(C.igpMain_Version())
 }
+
+// ShowDemoWindow shows the ImPlot demo window.
+func ShowDemoWindow(open *bool) {
+	if open == nil {
+		C.igpShowDemoWindow(nil)
+	} else {
+		var copen C.bool
+		C.igpShowDemoWindow(&copen)
+		*open = bool(copen)
+	}
+}
