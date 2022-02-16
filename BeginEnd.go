@@ -167,3 +167,11 @@ func BeginSubplotsV(title string, rows, cols int, size imgui.Vec2, flags Subplot
 
 	return bool(C.igpBeginSubplots(ctitle, C.int(rows), C.int(cols), wrapVec2(size), C.igpSubplotFlags(flags), rf, cf))
 }
+
+// EndSubplots marks the end of a subdivided plotting area.
+//
+// Only call EndSubplots() if BeginSubplots() returns true! Typically called at the end
+// of an if statement conditioned on BeginSublots(). See example above.
+func EndSubplots() {
+	C.igpEndSubplots()
+}
