@@ -1,0 +1,21 @@
+This folder houses a ImPlot release (from the release tab, not the repo
+directly), as well as a ImGUI release that must be in sync with
+inkyblackness/imgui-go. This is because the Go linker is not for C/C++
+and links each package indepedently, which is bad.
+
+If you don't do that, the linker might get angry about ABI compatibility,
+and, even if you were able to link, the IMGUI_CHECKVERSION() marco would
+do its job, which is to crash the program if the versions and data
+layouts does not match.
+
+go.mod specifies a strict version of imgui-go required, so that should
+not be a problem. It should also be quite easy to hack up this folder
+(and go.mod) yourself to link with another imgui-go/ImPlot version.
+
+
+------
+
+
+The Makefile is used to speed up compiles of the ImGUI/ImPlot dependencies
+in development, and is enabled by build tag "prebuilt". If you have things
+like MSYS2, this should be easy to hack for Windows.
