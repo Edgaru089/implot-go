@@ -10,7 +10,7 @@ import (
 //-----------------------------------------------------------------------------
 // [SECTION] Plot Items
 //-----------------------------------------------------------------------------
-
+//
 // The main plotting API is provied below. Call these functions between
 // Begin/EndPlot and after any Setup API calls. Each plots data on the current
 // x and y axes, which can be changed with `SetAxis/Axes`.
@@ -61,10 +61,15 @@ import (
 
 // Note only for the Go binding:
 //
-// Since slices are so versatile, so the Count and Offset parameters are removed.
+// For each type of ImPlot::PlotXXX/PlotXXXG, four functions are presented:
+// PlotXXX & PlotXXXV plots a slice of any number (integer or float),
+// PlotXXXP plots a slice of points, and PlotXXXG plots a set of points from a given getter.
+// They construct the data on the fly with no callbacks.
+//
+// Since slices are so versatile, the Count and Offset parameters are removed.
 // You can just slice the data youself, if you have it.
 //
-// All the values parameters in the PlotXXXAny() functions should only be slices or
+// All the values parameters in the PlotXXX/PlotXXXV() functions should only be slices or
 // arrays to numeric types, which is then converted to float64. If it is not, it panics.
 
 // Callback signature for the data getter.
