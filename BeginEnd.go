@@ -26,7 +26,7 @@ import (
 //  - size is the **frame** size of the plot widget, not the plot area.
 //    The default size of plots (i.e. when ImVec2(0,0)) can be modified
 //    in your ImPlotStyle.
-func BeginPlot(title string, size imgui.Vec2, flags Flags) bool {
+func BeginPlot(title string) bool {
 	return BeginPlotV(title, imgui.Vec2{X: -1, Y: 0}, Flags_None)
 }
 
@@ -106,7 +106,7 @@ func EndPlot() {
 //    subplot context. The actual size of the subplot will be based on the
 //    #size value you pass to _BeginSubplots_ and #row/#col_ratios if provided.
 func BeginSubplots(title string, rows, cols int) bool {
-	return BeginSubplotsV(title, rows, cols, imgui.Vec2{-1, 0}, SubplotFlags_None, nil, nil)
+	return BeginSubplotsV(title, rows, cols, imgui.Vec2{X: -1, Y: 0}, SubplotFlags_None, nil, nil)
 }
 
 // BeginSubplotsV starts a subdivided plotting context with all parameters.

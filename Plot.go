@@ -126,8 +126,8 @@ func valueGet(values interface{}) (result []float64) {
 
 // PlotLine plots a standard 2D line plot with minimal parameters.
 // It calls PlotLineV(label, values, 1, 0).
-func PlotLine(label string, values interface{}, xscale, x0 float64) {
-	PlotLineV(label, values, xscale, x0)
+func PlotLine(label string, values interface{}) {
+	PlotLineV(label, values, 1, 0)
 }
 
 // PlotLineV plots a standard 2D line plot with all parameters.
