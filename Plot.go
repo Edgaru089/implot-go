@@ -5,6 +5,7 @@ package implot
 import "C"
 import (
 	"reflect"
+	"unsafe"
 )
 
 //-----------------------------------------------------------------------------
@@ -61,9 +62,10 @@ import (
 
 // Note only for the Go binding:
 //
-// For each type of ImPlot::PlotXXX/PlotXXXG, four functions are presented:
+// For each type of ImPlot::PlotXXX/PlotXXXG, five functions are presented:
 // PlotXXX & PlotXXXV plots a slice of any number (integer or float),
-// PlotXXXP plots a slice of points, and PlotXXXG plots a set of points from a given getter.
+// PlotXXXXY plots separate X/Y slices, PlotXXXP plots a slice of points,
+// and PlotXXXG plots a set of points from a given getter.
 // They construct the data on the fly with no callbacks.
 //
 // Since slices are so versatile, the Count and Offset parameters are removed.
@@ -143,8 +145,14 @@ func PlotLineV(label string, values interface{}, xscale, x0 float64) {
 
 // PlotLineP plots a standard 2D line plot from a slice of points.
 func PlotLineP(label string, points []Point) {
-	xs, ys, count, stride := wrapPointSlice(points)
-	C.igpPlotLineXY(wrapString(label), xs, ys, count, stride)
+	xp, yp, count, stride := wrapPointSlice(points)
+	C.igpPlotLineXY(wrapString(label), xp, yp, count, stride)
+}
+
+// PlotLineXY plots a standard 2D line plot from slices of X/Y coords.
+func PlotLineXY(label string, xs, ys interface{}) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(xs), valueGet(ys))
+	C.igpPlotLineXY(wrapString(label), xp, yp, count, stride)
 }
 
 // PlotLineG plots a standard 2D line plot from a series of points obtained from a callback.
@@ -154,6 +162,176 @@ func PlotLineG(label string, getter DataGetter, userData interface{}, count int)
 
 // PlotScatter
 
+// PlotScatter plots a standard 2D scatter plot with minimal parameters.
+// It calls PlotScatterV(label, values, 1, 0).
+//
+// Default marker is ImPlotMarker_Circle.
+func PlotScatter(label string, values interface{}) {
+	PlotScatterV(label, values, 1, 0)
+}
+
+// PlotScatterV plots a standard 2D scatter plot with all parameters.
+//
+// Default marker is ImPlotMarker_Circle.
+func PlotScatterV(label string, values interface{}, xscale, x0 float64) {
+	vd := valueGet(values)
+	C.igpPlotScatter(wrapString(label), wrapDoubleSlice(vd), C.int(len(vd)), C.double(xscale), C.double(x0))
+}
+
+// PlotScatterP plots a standard 2D scatter plot from a slice of points.
+//
+// Default marker is ImPlotMarker_Circle.
+func PlotScatterP(label string, points []Point) {
+	xp, yp, count, stride := wrapPointSlice(points)
+	C.igpPlotScatterXY(wrapString(label), xp, yp, count, stride)
+}
+
+// PlotScatterXY plots a standard 2D scatter plot from slices of X/Y coords.
+//
+// Default marker is ImPlotMarker_Circle.
+func PlotScatterXY(label string, xs, ys interface{}) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(xs), valueGet(ys))
+	C.igpPlotScatterXY(wrapString(label), xp, yp, count, stride)
+}
+
+// PlotScatterG plots a standard 2D scatter plot from a series of points obtained from a callback.
+//
+// Default marker is ImPlotMarker_Circle.
+func PlotScatterG(label string, getter DataGetter, userData interface{}, count int) {
+	PlotScatterP(label, DataGet(getter, userData, count))
+}
+
 // PlotStairs
 
+// PlotStairs plots a stairstep graph with minimal parameters.
+// It calls PlotStairsV(label, values, 1, 0).
+//
+// The y value is continued constantly from every x position,
+// i.e. the interval [x[i], x[i+1]) has the value y[i].
+func PlotStairs(label string, values interface{}) {
+	PlotStairsV(label, values, 1, 0)
+}
+
+// PlotStairsV plots a stairstep graph with all parameters.
+// Default marker is ImPlotMarker_Circle.
+//
+// The y value is continued constantly from every x position,
+// i.e. the interval [x[i], x[i+1]) has the value y[i].
+func PlotStairsV(label string, values interface{}, xscale, x0 float64) {
+	vd := valueGet(values)
+	C.igpPlotStairs(wrapString(label), wrapDoubleSlice(vd), C.int(len(vd)), C.double(xscale), C.double(x0))
+}
+
+// PlotStairsP plots a stairstep graph from a slice of points.
+//
+// The y value is continued constantly from every x position,
+// i.e. the interval [x[i], x[i+1]) has the value y[i].
+func PlotStairsP(label string, points []Point) {
+	xp, yp, count, stride := wrapPointSlice(points)
+	C.igpPlotStairsXY(wrapString(label), xp, yp, count, stride)
+}
+
+// PlotStairsXY plots a stairstep graph from slices of X/Y coords.
+//
+// The y value is continued constantly from every x position,
+// i.e. the interval [x[i], x[i+1]) has the value y[i].
+func PlotStairsXY(label string, xs, ys interface{}) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(xs), valueGet(ys))
+	C.igpPlotStairsXY(wrapString(label), xp, yp, count, stride)
+}
+
+// PlotStairsG plots a stairstep graph from a series of points obtained from a callback.
+//
+// The y value is continued constantly from every x position,
+// i.e. the interval [x[i], x[i+1]) has the value y[i].
+func PlotStairsG(label string, getter DataGetter, userData interface{}, count int) {
+	PlotStairsP(label, DataGet(getter, userData, count))
+}
+
 // PlotShaded
+// PlotShadedRef
+
+// PlotShadedRef plots a shaded (filled) region between a line and a horizontal reference.
+// It calls PlotShadedV(label, values, 0, 1, 0).
+func PlotShadedRef(label string, values interface{}) {
+	PlotShadedRefV(label, values, 0, 1, 0)
+}
+
+// PlotShadedRefV plots a shaded (filled) region between a line and a horizontal reference.
+//
+// Set yref to +/-INFINITY for infinite fill extents.
+func PlotShadedRefV(label string, values interface{}, yref, xscale, x0 float64) {
+	vd := valueGet(values)
+	C.igpPlotShadedRef(wrapString(label), wrapDoubleSlice(vd), C.int(len(vd)), C.double(yref), C.double(xscale), C.double(x0))
+}
+
+// PlotShadedRefP plots a shaded (filled) region between a line and a horizontal reference.
+//
+// Set yref to +/-INFINITY for infinite fill extents.
+func PlotShadedRefP(label string, points []Point, yref float64) {
+	xp, yp, count, stride := wrapPointSlice(points)
+	C.igpPlotShadedRefXY(wrapString(label), xp, yp, C.double(yref), count, stride)
+}
+
+// PlotShadedRefXY plots a shaded (filled) region between a line and a horizontal reference.
+//
+// Set yref to +/-INFINITY for infinite fill extents.
+func PlotShadedRefXY(label string, xs, ys interface{}, yref float64) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(xs), valueGet(ys))
+	C.igpPlotShadedRefXY(wrapString(label), xp, yp, C.double(yref), count, stride)
+}
+
+// PlotShadedRefG plots a shaded (filled) region between a line and a horizontal reference.
+//
+// Set yref to +/-INFINITY for infinite fill extents.
+func PlotShadedRefG(label string, getter DataGetter, userData interface{}, count int, yref float64) {
+	PlotShadedRefP(label, DataGet(getter, userData, count), yref)
+}
+
+// PlotShadedLines
+
+// PlotShadedLines plots a shaded (filled) region between two lines, without the lines themselves.
+// It calls PlotShadedLinesV(label, vs0, vs1, 1, 0).
+func PlotShadedLines(label string, vs0, vs1 interface{}) {
+	PlotShadedLinesV(label, vs0, vs1, 1, 0)
+}
+
+// PlotShadedLinesV plots a shaded (filled) region between two lines, without the lines themselves.
+func PlotShadedLinesV(label string, vs0, vs1 interface{}, xscale, x0 float64) {
+	vd0, vd1 := valueGet(vs0), valueGet(vs1)
+	n := minint(len(vd0), len(vd1))
+	// Constuct the X coords
+	xs := make([]float64, n)
+	for i := 0; i < n; i++ {
+		xs[i] = x0 + (float64)(i)*xscale
+	}
+	PlotShadedLinesXY(label, xs, vd0, vd1)
+}
+
+// PlotShadedLinesXY plots a shaded (filled) region between two lines, without the lines themselves.
+func PlotShadedLinesXY(label string, xs, ys1, ys2 interface{}) {
+	xd, yd1, yd2 := valueGet(xs), valueGet(ys1), valueGet(ys2)
+	C.igpPlotShadedLinesXY(
+		wrapString(label),
+		wrapDoubleSlice(xd),
+		wrapDoubleSlice(yd1),
+		wrapDoubleSlice(yd2),
+		C.int(minint(len(xd), minint(len(yd1), len(yd2)))),
+		C.int(unsafe.Sizeof(float64(0))),
+	)
+}
+
+// PlotShadedLinesG plots a shaded (filled) region between two lines, without the lines themselves.
+//
+// The X component of the second getter is discarded.
+func PlotShadedLinesG(label string, get1 DataGetter, data1 interface{}, get2 DataGetter, data2 interface{}, count int) {
+	xs, ys1, ys2 := make([]float64, count), make([]float64, count), make([]float64, count)
+	for i := 0; i < count; i++ {
+		pt1 := get1(data1, i)
+		xs[i], ys1[i] = pt1.X, pt1.Y
+		pt2 := get2(data2, i)
+		_, ys2[i] = pt2.X, pt2.Y
+	}
+
+	PlotShadedLinesXY(label, xs, ys1, ys2)
+}

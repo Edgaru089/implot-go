@@ -30,13 +30,24 @@ func wrapDoubleSlice(slice []float64) *C.double {
 	return (*C.double)(unsafe.Pointer(&slice[0]))
 }
 
-func wrapPointSlice(slice []Point) (xs, ys *C.double, count, stride C.int) {
+func wrapPointSlice(slice []Point) (xp, yp *C.double, count, stride C.int) {
 	if len(slice) == 0 {
 		return
 	}
-	xs = (*C.double)(unsafe.Pointer(&slice[0].X))
-	ys = (*C.double)(unsafe.Pointer(&slice[0].Y))
+	xp = (*C.double)(unsafe.Pointer(&slice[0].X))
+	yp = (*C.double)(unsafe.Pointer(&slice[0].Y))
 	count = (C.int)(len(slice))
 	stride = (C.int)(unsafe.Sizeof(slice[0]))
+	return
+}
+
+func wrapXYSlice(xs, ys []float64) (xp, yp *C.double, count, stride C.int) {
+	count = (C.int)(minint(len(xs), len(ys)))
+	if count == 0 {
+		return
+	}
+	xp = (*C.double)(unsafe.Pointer(&xs[0]))
+	yp = (*C.double)(unsafe.Pointer(&ys[0]))
+	stride = (C.int)(unsafe.Sizeof(xs[0]))
 	return
 }
