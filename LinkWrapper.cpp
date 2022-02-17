@@ -4,3 +4,4 @@
 #include "wrapper/Contexts.cpp"
 #include "wrapper/BeginEnd.cpp"
 #include "wrapper/Plot.cpp"
+#include "wrapper/Setup.cpp"
