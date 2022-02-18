@@ -36,43 +36,41 @@ const (
 
 // Flags for plots / BeginPlot
 const (
-	Flags_None Flags = 0 // default
+	Flags_NoTitle     Flags = 1 << iota // the plot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MyPlot")
+	Flags_NoLegend                      // the legend will not be displayed
+	Flags_NoMouseText                   // the mouse position, in plot coordinates, will not be displayed inside of the plot
+	Flags_NoInputs                      // the user will not be able to interact with the plot
+	Flags_NoMenus                       // the user will not be able to open context menus
+	Flags_NoBoxSelect                   // the user will not be able to box-select
+	Flags_NoChild                       // a child window region will not be used to capture mouse scroll (can boost performance for single ImGui window applications)
+	Flags_NoFrame                       // the ImGui frame will not be rendered
+	Flags_Equal                         // x and y axes pairs will be constrained to have the same units/pixel
+	Flags_Crosshairs                    // the default mouse cursor will be replaced with a crosshair when hovered
+	Flags_AntiAliased                   // plot items will be software anti-aliased (not recommended for high density plots, prefer MSAA)
 
-	Flags_NoTitle     = 1 << iota // the plot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MyPlot")
-	Flags_NoLegend                // the legend will not be displayed
-	Flags_NoMouseText             // the mouse position, in plot coordinates, will not be displayed inside of the plot
-	Flags_NoInputs                // the user will not be able to interact with the plot
-	Flags_NoMenus                 // the user will not be able to open context menus
-	Flags_NoBoxSelect             // the user will not be able to box-select
-	Flags_NoChild                 // a child window region will not be used to capture mouse scroll (can boost performance for single ImGui window applications)
-	Flags_NoFrame                 // the ImGui frame will not be rendered
-	Flags_Equal                   // x and y axes pairs will be constrained to have the same units/pixel
-	Flags_Crosshairs              // the default mouse cursor will be replaced with a crosshair when hovered
-	Flags_AntiAliased             // plot items will be software anti-aliased (not recommended for high density plots, prefer MSAA)
-
+	Flags_None       = 0 // default
 	Flags_CanvasOnly = Flags_NoTitle | Flags_NoLegend | Flags_NoMenus | Flags_NoBoxSelect | Flags_NoMouseText
 )
 
 // Flags for plot axes / SetupAxis
 const (
-	AxisFlags_None AxisFlags = 0 // default
+	AxisFlags_NoLabel      AxisFlags = 1 << iota // the axis label will not be displayed (axis labels also hidden if the supplied string name is NULL)
+	AxisFlags_NoGridLines                        // no grid lines will be displayed
+	AxisFlags_NoTickMarks                        // no tick marks will be displayed
+	AxisFlags_NoTickLabels                       // no text labels will be displayed
+	AxisFlags_NoInitialFit                       // axis will not be initially fit to data extents on the first rendered frame
+	AxisFlags_NoMenus                            // the user will not be able to open context menus with right-click
+	AxisFlags_Opposite                           // axis ticks and labels will be rendered on conventionally opposite side (i.e, right or top)
+	AxisFlags_Foreground                         // grid lines will be displayed in the foreground (i.e. on top of data) in stead of the background
+	AxisFlags_LogScale                           // a logartithmic (base 10) axis scale will be used (mutually exclusive with ImPlotAxisFlags_Time)
+	AxisFlags_Time                               // axis will display date/time formatted labels (mutually exclusive with ImPlotAxisFlags_LogScale)
+	AxisFlags_Invert                             // the axis will be inverted
+	AxisFlags_AutoFit                            // axis will be auto-fitting to data extents
+	AxisFlags_RangeFit                           // axis will only fit points if the point is in the visible range of the **orthogonal** axis
+	AxisFlags_LockMin                            // the axis minimum value will be locked when panning/zooming
+	AxisFlags_LockMax                            // the axis maximum value will be locked when panning/zooming
 
-	AxisFlags_NoLabel      = 1 << iota // the axis label will not be displayed (axis labels also hidden if the supplied string name is NULL)
-	AxisFlags_NoGridLines              // no grid lines will be displayed
-	AxisFlags_NoTickMarks              // no tick marks will be displayed
-	AxisFlags_NoTickLabels             // no text labels will be displayed
-	AxisFlags_NoInitialFit             // axis will not be initially fit to data extents on the first rendered frame
-	AxisFlags_NoMenus                  // the user will not be able to open context menus with right-click
-	AxisFlags_Opposite                 // axis ticks and labels will be rendered on conventionally opposite side (i.e, right or top)
-	AxisFlags_Foreground               // grid lines will be displayed in the foreground (i.e. on top of data) in stead of the background
-	AxisFlags_LogScale                 // a logartithmic (base 10) axis scale will be used (mutually exclusive with ImPlotAxisFlags_Time)
-	AxisFlags_Time                     // axis will display date/time formatted labels (mutually exclusive with ImPlotAxisFlags_LogScale)
-	AxisFlags_Invert                   // the axis will be inverted
-	AxisFlags_AutoFit                  // axis will be auto-fitting to data extents
-	AxisFlags_RangeFit                 // axis will only fit points if the point is in the visible range of the **orthogonal** axis
-	AxisFlags_LockMin                  // the axis minimum value will be locked when panning/zooming
-	AxisFlags_LockMax                  // the axis maximum value will be locked when panning/zooming
-
+	AxisFlags_None          = 0 // default
 	AxisFlags_Lock          = AxisFlags_LockMin | AxisFlags_LockMax
 	AxisFlags_NoDecorations = AxisFlags_NoLabel | AxisFlags_NoGridLines | AxisFlags_NoTickMarks | AxisFlags_NoTickLabels
 	AxisFlags_AuxDefault    = AxisFlags_NoGridLines | AxisFlags_Opposite
@@ -80,50 +78,46 @@ const (
 
 // Flags for subplots / BeginSubplot
 const (
-	SubplotFlags_None SubplotFlags = 0 // default
-
-	SubplotFlags_NoTitle    = 1 << iota // the subplot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MySubplot")
-	SubplotFlags_NoLegend               // the legend will not be displayed (only applicable if ImPlotSubplotFlags_ShareItems is enabled)
-	SubplotFlags_NoMenus                // the user will not be able to open context menus with right-click
-	SubplotFlags_NoResize               // resize splitters between subplot cells will be not be provided
-	SubplotFlags_NoAlign                // subplot edges will not be aligned vertically or horizontally
-	SubplotFlags_ShareItems             // items across all subplots will be shared and rendered into a single legend entry
-	SubplotFlags_LinkRows               // link the y-axis limits of all plots in each row (does not apply to auxiliary axes)
-	SubplotFlags_LinkCols               // link the x-axis limits of all plots in each column (does not apply to auxiliary axes)
-	SubplotFlags_LinkAllX               // link the x-axis limits in every plot in the subplot (does not apply to auxiliary axes)
-	SubplotFlags_LinkAllY               // link the y-axis limits in every plot in the subplot (does not apply to auxiliary axes)
-	SubplotFlags_ColMajor               // subplots are added in column major order instead of the default row major order
+	SubplotFlags_NoTitle    SubplotFlags = 1 << iota // the subplot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MySubplot")
+	SubplotFlags_NoLegend                            // the legend will not be displayed (only applicable if ImPlotSubplotFlags_ShareItems is enabled)
+	SubplotFlags_NoMenus                             // the user will not be able to open context menus with right-click
+	SubplotFlags_NoResize                            // resize splitters between subplot cells will be not be provided
+	SubplotFlags_NoAlign                             // subplot edges will not be aligned vertically or horizontally
+	SubplotFlags_ShareItems                          // items across all subplots will be shared and rendered into a single legend entry
+	SubplotFlags_LinkRows                            // link the y-axis limits of all plots in each row (does not apply to auxiliary axes)
+	SubplotFlags_LinkCols                            // link the x-axis limits of all plots in each column (does not apply to auxiliary axes)
+	SubplotFlags_LinkAllX                            // link the x-axis limits in every plot in the subplot (does not apply to auxiliary axes)
+	SubplotFlags_LinkAllY                            // link the y-axis limits in every plot in the subplot (does not apply to auxiliary axes)
+	SubplotFlags_ColMajor                            // subplots are added in column major order instead of the default row major order
+	SubplotFlags_None       = 0                      // default
 )
 
 // Flags for legends / SetupLegend
 const (
-	LegendFlags_None LegendFlags = 0 // default
-
-	LegendFlags_NoButtons       = 1 << iota // legend icons will not function as hide/show buttons
-	LegendFlags_NoHighlightItem             // plot items will not be highlighted when their legend entry is hovered
-	LegendFlags_NoHighlightAxis             // axes will not be highlighted when legend entries are hovered (only relevant if x/y-axis count > 1)
-	LegendFlags_NoMenus                     // the user will not be able to open context menus with right-click
-	LegendFlags_Outside                     // legend will be rendered outside of the plot area
-	LegendFlags_Horizontal                  // legend entries will be displayed horizontally
+	LegendFlags_NoButtons       LegendFlags = 1 << iota // legend icons will not function as hide/show buttons
+	LegendFlags_NoHighlightItem                         // plot items will not be highlighted when their legend entry is hovered
+	LegendFlags_NoHighlightAxis                         // axes will not be highlighted when legend entries are hovered (only relevant if x/y-axis count > 1)
+	LegendFlags_NoMenus                                 // the user will not be able to open context menus with right-click
+	LegendFlags_Outside                                 // legend will be rendered outside of the plot area
+	LegendFlags_Horizontal                              // legend entries will be displayed horizontally
+	LegendFlags_None            = 0                     // default
 )
 
 // Flags for mouse hover text / SetupMouseText
 const (
-	MouseTextFlags_None MouseTextFlags = 0 // default
-
-	MouseTextFlags_NoAuxAxes  = 1 << iota // only show the mouse position for primary axes
-	MouseTextFlags_NoFormat               // axes label formatters won't be used to render text
-	MouseTextFlags_ShowAlways             // always display mouse position even if plot not hovered
+	MouseTextFlags_NoAuxAxes  MouseTextFlags = 1 << iota // only show the mouse position for primary axes
+	MouseTextFlags_NoFormat                              // axes label formatters won't be used to render text
+	MouseTextFlags_ShowAlways                            // always display mouse position even if plot not hovered
+	MouseTextFlags_None       = 0                        // default
 )
 
 // Flags for DragPoint, DragLine, DragRect
 const (
-	DragToolFlags_None DragToolFlags = 0 // default
-
-	DragToolFlags_NoCursors = 1 << iota // drag tools won't change cursor icons when hovered or held
-	DragToolFlags_NoFit                 // the drag tool won't be considered for plot fits
-	DragToolFlags_NoInputs              // lock the tool from user inputs
-	DragToolFlags_Delayed               // tool rendering will be delayed one frame; useful when applying position-constraints
+	DragToolFlags_NoCursors DragToolFlags = 1 << iota // drag tools won't change cursor icons when hovered or held
+	DragToolFlags_NoFit                               // the drag tool won't be considered for plot fits
+	DragToolFlags_NoInputs                            // lock the tool from user inputs
+	DragToolFlags_Delayed                             // tool rendering will be delayed one frame; useful when applying position-constraints
+	DragToolFlags_None      = 0                       // default
 )
 
 // Flags for PlotBarGroups
@@ -203,8 +197,7 @@ const (
 
 // Markers
 const (
-	Marker_None     Marker = iota // no marker
-	Marker_Circle                 // a circle marker
+	Marker_Circle   Marker = iota // a circle marker
 	Marker_Square                 // a square maker
 	Marker_Diamond                // a diamond marker
 	Marker_Up                     // an upward-pointing triangle marker
@@ -215,6 +208,7 @@ const (
 	Marker_Plus                   // a plus marker (not fillable)
 	Marker_Asterisk               // a asterisk marker (not fillable)
 	Marker_Count
+	Marker_None = -1 // no marker
 )
 
 // Built-in colormaps
@@ -239,11 +233,11 @@ const (
 
 // Locations used to position items on a plot
 const (
-	Location_Center Location = 0         // center-center
-	Location_North           = 1 << iota // top-center
+	Location_North  Location = 1 << iota // top-center
 	Location_South                       // bottom-center
 	Location_West                        // center-left
 	Location_East                        // center-right
+	Location_Center = 0                  // center-center
 
 	Location_NorthWest = Location_North | Location_West // top-left
 	Location_NorthEast = Location_North | Location_East // top-right
