@@ -70,8 +70,17 @@ var (
 	axisFormatCb map[uintptr]struct {
 		fmt      Formatter
 		userData interface{}
-	}
+	} = make(map[uintptr]struct {
+		fmt      Formatter
+		userData interface{}
+	})
+	// Callbacks after every EndPlot(), for cleaning.
+	axisEndPlotCb []func()
 )
+
+func addEndPlotCb(f func()) {
+	axisEndPlotCb = append(axisEndPlotCb, f)
+}
 
 //export igpgoAxisFormatCb
 func igpgoAxisFormatCb(value float64, buf *byte, size C.int, cbid uintptr) {
@@ -87,7 +96,7 @@ func igpgoAxisFormatCb(value float64, buf *byte, size C.int, cbid uintptr) {
 	if !ok {
 		panic(fmt.Errorf("igpgoAxisFormatCb() called with invalid callback ID (%d)", cbid))
 	}
-	copy(b, cb.fmt(value, cb.userData))
+	copy(b, cb.fmt(value, cb.userData)+"\x00")
 }
 
 // SetupAxisFormatCallback sets the format of numeric axis labels via formatter callback.
@@ -109,11 +118,13 @@ func SetupAxisFormatCallback(axis Axis, formatter Formatter, userData interface{
 //
 // To keep the default ticks, set keep_default=true.
 //
-// Note that if len(values)!=len(labels), it takes whichever smaller.
+// Note that if len(values)!=len(labels), it takes len(values).
 func SetupAxisTickValues(axis Axis, values []float64, labels []string, keepDefaults bool) {
+	dsp, fin := wrapDoubleSliceAlloc(values)
+	addEndPlotCb(fin)
 	sp, fin := wrapStringSlice(labels)
-	defer fin()
-	C.igpSetupAxisTickValues(C.igpAxis(axis), wrapDoubleSlice(values), C.int(minint(len(labels), len(values))), sp, C.bool(keepDefaults))
+	addEndPlotCb(fin)
+	C.igpSetupAxisTickValues(C.igpAxis(axis), dsp, C.int(len(values)), sp, C.bool(keepDefaults))
 }
 
 // SetupAxisTickRange set an axis' tick values (n of them from [vmin, vmax]) and labels.
@@ -122,7 +133,7 @@ func SetupAxisTickValues(axis Axis, values []float64, labels []string, keepDefau
 // To keep the default ticks, set keep_default=true.
 func SetupAxisTickRange(axis Axis, vmin, vmax float64, n int, labels []string, keepDefaults bool) {
 	sp, fin := wrapStringSlice(labels)
-	defer fin()
+	addEndPlotCb(fin)
 	C.igpSetupAxisTickRange(C.igpAxis(axis), C.double(vmin), C.double(vmax), C.int(n), sp, C.bool(keepDefaults))
 }
 

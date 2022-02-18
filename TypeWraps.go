@@ -1,9 +1,11 @@
 package implot
 
 // #include <stdlib.h>
+// #include <string.h>
 // #include "wrapper/Types.h"
 import "C"
 import (
+	"reflect"
 	"unsafe"
 
 	"github.com/inkyblackness/imgui-go/v4"
@@ -53,19 +55,42 @@ func wrapXYSlice(xs, ys []float64) (xp, yp *C.double, count, stride C.int) {
 	return
 }
 
+// wraps a []float64 allocating C memory for it.
+func wrapDoubleSliceAlloc(slice []float64) (sp *C.double, fin func()) {
+	n := len(slice)
+	if n == 0 {
+		return nil, func() {}
+	}
+	nbytes := n * int(unsafe.Sizeof(C.double(0)))
+	sp = (*C.double)(C.malloc(C.size_t(nbytes)))
+	C.memcpy(unsafe.Pointer(sp), unsafe.Pointer(&slice[0]), C.size_t(nbytes))
+	return sp, func() {
+		C.free(unsafe.Pointer(sp))
+	}
+}
+
 func wrapStringSlice(slice []string) (sp **C.char, fin func()) {
 	if len(slice) == 0 {
 		return nil, func() {}
 	}
 
 	n := len(slice)
-	rsp := make([]uintptr, n)
+	rsp := make([]uintptr, n+1)
 	for i := 0; i < n; i++ {
-		rs := C.malloc(C.size_t(len(slice[i]) + 1))
-		copy(C.GoBytes(rs, C.int(len(slice[i])+1)), slice[i])
+		nbytes := len(slice[i]) + 1
+		rs := C.malloc(C.size_t(nbytes))
+		//copy(C.GoBytes(rs, C.int(len(slice[i]))), slice[i])
+		bhead := &reflect.SliceHeader{
+			Data: uintptr(rs),
+			Len:  nbytes + 1,
+			Cap:  nbytes + 1,
+		}
+		b := *((*[]byte)(unsafe.Pointer(bhead)))
+		b[copy(b, slice[i])] = 0
 		rsp[i] = uintptr(rs)
 	}
 
+	// So this fin() keeps the rsp from getting GCed
 	return (**C.char)(unsafe.Pointer(&rsp[0])), func() {
 		for _, p := range rsp {
 			C.free(unsafe.Pointer(p))

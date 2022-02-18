@@ -64,6 +64,10 @@ func EndPlot() {
 	for k := range axisFormatCb {
 		delete(axisFormatCb, k)
 	}
+	for _, f := range axisEndPlotCb {
+		f()
+	}
+	axisEndPlotCb = axisEndPlotCb[0:0]
 }
 
 // BeginSubplots starts a subdivided plotting context with onle the required parameters.
