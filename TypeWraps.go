@@ -1,5 +1,6 @@
 package implot
 
+// #include <stdlib.h>
 // #include "wrapper/Types.h"
 import "C"
 import (
@@ -50,4 +51,24 @@ func wrapXYSlice(xs, ys []float64) (xp, yp *C.double, count, stride C.int) {
 	yp = (*C.double)(unsafe.Pointer(&ys[0]))
 	stride = (C.int)(unsafe.Sizeof(xs[0]))
 	return
+}
+
+func wrapStringSlice(slice []string) (sp **C.char, fin func()) {
+	if len(slice) == 0 {
+		return nil, func() {}
+	}
+
+	n := len(slice)
+	rsp := make([]uintptr, n)
+	for i := 0; i < n; i++ {
+		rs := C.malloc(C.size_t(len(slice[i]) + 1))
+		copy(C.GoBytes(rs, C.int(len(slice[i])+1)), slice[i])
+		rsp[i] = uintptr(rs)
+	}
+
+	return (**C.char)(unsafe.Pointer(&rsp[0])), func() {
+		for _, p := range rsp {
+			C.free(unsafe.Pointer(p))
+		}
+	}
 }

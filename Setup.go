@@ -103,3 +103,59 @@ func SetupAxisFormatCallback(axis Axis, formatter Formatter, userData interface{
 
 	C.igpSetupAxisFormatCallback(C.igpAxis(axis), C.uintptr_t(cbid))
 }
+
+// SetupAxisTickValues set an axis' tick values (as given in the slice) and labels.
+// Labels are optional and can be set default with labels=nil.
+//
+// To keep the default ticks, set keep_default=true.
+//
+// Note that if len(values)!=len(labels), it takes whichever smaller.
+func SetupAxisTickValues(axis Axis, values []float64, labels []string, keepDefaults bool) {
+	sp, fin := wrapStringSlice(labels)
+	defer fin()
+	C.igpSetupAxisTickValues(C.igpAxis(axis), wrapDoubleSlice(values), C.int(minint(len(labels), len(values))), sp, C.bool(keepDefaults))
+}
+
+// SetupAxisTickRange set an axis' tick values (n of them from [vmin, vmax]) and labels.
+// Labels are optional and can be set default with labels=nil.
+//
+// To keep the default ticks, set keep_default=true.
+func SetupAxisTickRange(axis Axis, vmin, vmax float64, n int, labels []string, keepDefaults bool) {
+	sp, fin := wrapStringSlice(labels)
+	defer fin()
+	C.igpSetupAxisTickRange(C.igpAxis(axis), C.double(vmin), C.double(vmax), C.int(n), sp, C.bool(keepDefaults))
+}
+
+// SetupAxes sets the label and/or flags for primary X and Y axes.
+// (shorthand for two calls to SetupAxis)
+func SetupAxes(xlabel, ylabel string, xflags, yflags AxisFlags) {
+	C.igpSetupAxes(wrapString(xlabel), wrapString(ylabel), C.igpAxisFlags(xflags), C.igpAxisFlags(yflags))
+}
+
+// SetupAxesLimits sets the primary X and Y axes range limits.
+// If ImPlotCond_Always is used, the axes limits will be locked.
+// (shorthand for two calls to SetupAxisLimits)
+func SetupAxesLimits(xmin, xmax, ymin, ymax float64, cond Condition) {
+	C.igpSetupAxesLimits(C.double(xmin), C.double(xmax), C.double(ymin), C.double(ymax), C.igpCondition(cond))
+}
+
+// SetupLegend sets up the position and flags of the plot legend.
+func SetupLegend(location Location, flags LegendFlags) {
+	C.igpSetupLegend(C.igpLocation(location), C.igpLegendFlags(flags))
+}
+
+// SetupMouseText sets up location of the current plot's mouse position text
+// (the tiny xxx,yyy numbers on the plot).
+// The default is South|East (so bottom-right).
+func SetupMouseText(location Location, flags MouseTextFlags) {
+	C.igpSetupMouseText(C.igpLocation(location), C.igpMouseTextFlags(flags))
+}
+
+// SetupFinish explicitly finalize plot setup. Once you call
+// this, you cannot make anymore Setup calls for the current plot!
+//
+// Note that calling this function is OPTIONAL; it will be called
+// by the first subsequent setup-locking API call.
+func SetupFinish() {
+	C.igpSetupFinish()
+}

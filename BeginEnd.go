@@ -58,6 +58,12 @@ func BeginPlotV(title string, size imgui.Vec2, flags Flags) bool {
 // of an if statement conditioned on BeginPlot(). See example above.
 func EndPlot() {
 	C.igpEndPlot()
+
+	// Discard temp data
+	// from Setup.go:69
+	for k := range axisFormatCb {
+		delete(axisFormatCb, k)
+	}
 }
 
 // BeginSubplots starts a subdivided plotting context with onle the required parameters.
