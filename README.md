@@ -9,9 +9,9 @@ It has similar goals compared to inkyblackness's imgui-go wrapper:
  - [x] documented
  - [ ] feature-complete
  - [ ] versioned
- - [x] with examples (living in the `example-intree` branch for now)
+ - [x] with examples (living in another repo [here](https://github.com/Edgaru089/implot-go-example))
 
-![Screenshot](example/screenshot.png)
+![Screenshot](screenshot.png)
 
 ---
 
