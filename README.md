@@ -15,6 +15,8 @@ It has similar goals compared to inkyblackness's imgui-go wrapper:
 
 ---
 
+**I just `rm -rf`ed what I've been working on for a whole day. Don't ever do that.** - 2022/02/19
+
 This is very much work in progress, here is a list from the Table of Contents of implot.h:
  - [x] Contexts
  - [x] Begin/End Plot
