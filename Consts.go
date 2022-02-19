@@ -3,6 +3,9 @@ package implot
 import "C"
 import "github.com/inkyblackness/imgui-go/v4"
 
+// Special auto value. Used in sizes, width, etc.
+var Auto float32 = -1
+
 // Special color used to indicate that a color should be deduced automatically.
 var AutoColor = imgui.Vec4{X: 0, Y: 0, Z: 0, W: -1}
 

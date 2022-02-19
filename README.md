@@ -28,7 +28,7 @@ This is very much work in progress, here is a list from the Table of Contents of
  - [ ] Plot Utils
  - [ ] Legend Utils
  - [ ] Drag and Drop
- - [ ] Styling
+ - [x] Styling (& SetNextXXXStyle)
  - [ ] Colormaps
  - [ ] Input Mapping
  - [ ] Miscellaneous

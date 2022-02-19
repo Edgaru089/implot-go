@@ -21,7 +21,7 @@ typedef int igpColormap;
 typedef int igpLocation;
 typedef int igpBin;
 
-typedef void *igpContext, *iggContext;
+typedef void *igpContext, *iggContext, *igpStyle;
 
 typedef struct {
 	float x, y;

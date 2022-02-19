@@ -18,3 +18,8 @@ func ShowDemoWindow(open *bool) {
 		*open = bool(copen)
 	}
 }
+
+//export igpPanic
+func igpPanic(msg *C.char) {
+	panic(C.GoString(msg))
+}

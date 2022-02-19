@@ -23,6 +23,14 @@ func (p Point) wrap() C.igpPoint {
 	return C.igpPoint{x: C.double(p.X), y: C.double(p.Y)}
 }
 
+func unwrapVec2(v C.igpVec2) imgui.Vec2 {
+	return imgui.Vec2{X: float32(v.x), Y: float32(v.y)}
+}
+
+func unwrapVec4(v C.igpVec4) imgui.Vec4 {
+	return imgui.Vec4{X: float32(v.x), Y: float32(v.y), Z: float32(v.z), W: float32(v.w)}
+}
+
 func wrapString(str string) *C.char {
 	buf := make([]byte, len(str)+1)
 	copy(buf, str)
