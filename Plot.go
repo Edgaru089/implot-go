@@ -4,6 +4,7 @@ package implot
 // #include "wrapper/Plot.h"
 import "C"
 import (
+	"math"
 	"reflect"
 	"unsafe"
 )
@@ -334,4 +335,140 @@ func PlotShadedLinesG(label string, get1 DataGetter, data1 interface{}, get2 Dat
 	}
 
 	PlotShadedLinesXY(label, xs, ys1, ys2)
+}
+
+// PlotBars
+
+// PlotBars plots a vertical bar graph, with every bar centering at X coords 0, 1, ..., N-1.
+func PlotBars(label string, vs interface{}) {
+	PlotBarsV(label, vs, 0.67, 0)
+}
+
+// PlotBarsV plots a vertical bar graph, with bars centering at
+// x0, x0+1, x0+2, ... x0+N-1, Each taking up a fraction of the
+// available width. #barWidth should be in (0, 1].
+func PlotBarsV(label string, vs interface{}, barWidth, x0 float64) {
+	vd := valueGet(vs)
+	C.igpPlotBars(wrapString(label), wrapDoubleSlice(vd), C.int(len(vd)), C.double(barWidth), C.double(x0))
+}
+
+// PlotBarsP plots a vertical bar graph, with bars each taking up a
+// fraction of the available width. #barWidthFraction should be in (0, 1].
+func PlotBarsP(label string, ps []Point, barWidth float64) {
+	xp, yp, count, stride := wrapPointSlice(ps)
+	C.igpPlotBarsXY(wrapString(label), xp, yp, count, C.double(barWidth), stride)
+}
+
+// PlotBarsXY plots a vertical bar graph, with bars each taking up a
+// fraction of the available width. #barWidth should be in (0, 1].
+func PlotBarsXY(label string, vx, vy interface{}, barWidth float64) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(vx), valueGet(vy))
+	C.igpPlotBarsXY(wrapString(label), xp, yp, count, C.double(barWidth), stride)
+}
+
+// PlotBarsG plots a vertical bar graph, with bars each taking up a
+// fraction of the available width. #barWidth should be in (0, 1].
+func PlotBarsG(label string, getter DataGetter, userData interface{}, count int, barWidth float64) {
+	PlotBarsP(label, DataGet(getter, userData, count), barWidth)
+}
+
+// PlotBarsH plots a horizontal bar graph, with every bar centering at Y coords 0, 1, ..., N-1.
+func PlotBarsH(label string, vs interface{}) {
+	PlotBarsHV(label, vs, 0.67, 0)
+}
+
+// PlotBarsHV plots a horizontal bar graph, with bars centering at
+// y0, y0+1, y0+2, ... y0+N-1, Each taking up a fraction of the
+// available height. #barHeight should be in (0, 1].
+func PlotBarsHV(label string, vs interface{}, barHeight, y0 float64) {
+	vd := valueGet(vs)
+	C.igpPlotBarsH(wrapString(label), wrapDoubleSlice(vd), C.int(len(vd)), C.double(barHeight), C.double(y0))
+}
+
+// PlotBarsHP plots a horizontal bar graph, with bars each taking up a
+// fraction of the available height. #barHeight should be in (0, 1].
+func PlotBarsHP(label string, ps []Point, barHeight float64) {
+	xp, yp, count, stride := wrapPointSlice(ps)
+	C.igpPlotBarsHXY(wrapString(label), xp, yp, count, C.double(barHeight), stride)
+}
+
+// PlotBarsHXY plots a horizontal bar graph, with bars each taking up a
+// fraction of the available height. #barHeight should be in (0, 1].
+func PlotBarsHXY(label string, vx, vy interface{}, barHeight float64) {
+	xp, yp, count, stride := wrapXYSlice(valueGet(vx), valueGet(vy))
+	C.igpPlotBarsHXY(wrapString(label), xp, yp, count, C.double(barHeight), stride)
+}
+
+// PlotBarsHG plots a horizontal bar graph, with bars each taking up a
+// fraction of the available height. #barHeight should be in (0, 1].
+func PlotBarsHG(label string, getter DataGetter, userData interface{}, count int, barHeight float64) {
+	PlotBarsHP(label, DataGet(getter, userData, count), barHeight)
+}
+
+// PlotBarGroups plots a group of vertical bars.
+//
+// The I-th item in the J-th group is in #values[I][J].
+// The I-th item has a legend label of #itemLabels[I].
+//
+// Item count  N = Min(len(itemLabels), len(values)).
+// Group count M = Min(len(values[0]), len(values[1]), ... len(values[N-1])).
+//
+// The bar groups are centered at at x0, x0+1, x0+2, x0+M-1.
+// If you want to put labels on the groups, use SetupAxisTickValues.
+func PlotBarGroups(itemLabels []string, values [][]float64, groupWidth, x0 float64, flags BarGroupsFlags) {
+	n, m := minint(len(itemLabels), len(values)), math.MaxInt
+	for _, s := range values {
+		m = minint(m, len(s))
+	}
+
+	// Construct the matrix
+	stride := unsafe.Sizeof(C.double(0))
+	vp := C.malloc(C.size_t(uintptr(n*m) * stride))
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			*((*float64)(unsafe.Add(vp, stride*uintptr(i*m+j)))) = values[i][j]
+		}
+	}
+	addEndPlotCb(func() { C.free(vp) })
+
+	// Copy the labels
+	vplabels, fin := wrapStringSlice(itemLabels)
+	addEndPlotCb(fin)
+
+	// Make the call
+	C.igpPlotBarGroups(vplabels, (*C.double)(vp), C.int(n), C.int(m), C.double(groupWidth), C.double(x0), C.igpBarGroupsFlags(flags))
+}
+
+// PlotBarGroupsH plots a group of horizontal bars.
+//
+// The I-th item in the J-th group is in #values[I][J].
+// The I-th item has a legend label of #itemLabels[I].
+//
+// Item count  N = Min(len(itemLabels), len(values)).
+// Group count M = Min(len(values[0]), len(values[1]), ... len(values[N-1])).
+//
+// The bar groups are centered at at y0, y0+1, y0+2, y0+M-1.
+// If you want to put labels on the groups, use SetupAxisTickValues.
+func PlotBarGroupsH(itemLabels []string, values [][]float64, groupWidth, y0 float64, flags BarGroupsFlags) {
+	n, m := minint(len(itemLabels), len(values)), math.MaxInt
+	for _, s := range values {
+		m = minint(m, len(s))
+	}
+
+	// Construct the matrix
+	stride := unsafe.Sizeof(C.double(0))
+	vp := C.malloc(C.size_t(uintptr(n*m) * stride))
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			*((*float64)(unsafe.Add(vp, stride*uintptr(i*m+j)))) = values[i][j]
+		}
+	}
+	addEndPlotCb(func() { C.free(vp) })
+
+	// Copy the labels
+	vplabels, fin := wrapStringSlice(itemLabels)
+	addEndPlotCb(fin)
+
+	// Make the call
+	C.igpPlotBarGroupsH(vplabels, (*C.double)(vp), C.int(n), C.int(m), C.double(groupWidth), C.double(y0), C.igpBarGroupsFlags(flags))
 }

@@ -25,6 +25,16 @@ void igpPlotShadedRefXY(const char *label, const double *xs, const double *ys, d
 // implot.PlotShadedLines() [Plot.go]
 void igpPlotShadedLinesXY(const char *label, const double *xs, const double *ys1, const double *ys2, int count, int stride);
 
+// Vertical/Horizontal bars
+void igpPlotBars(const char *label, const double *values, int count, double bar_width, double x0);
+void igpPlotBarsXY(const char *label, const double *xs, const double *ys, int count, double bar_width, int stride);
+void igpPlotBarsH(const char *label, const double *values, int count, double bar_height, double y0);
+void igpPlotBarsHXY(const char *label, const double *xs, const double *ys, int count, double bar_height, int stride);
+// Groups of vertical/horizontal bars
+void igpPlotBarGroups(const char **labels, const double *values, int items_per_group, int groups, double group_width, double x0, igpBarGroupsFlags flags);
+void igpPlotBarGroupsH(const char **labels, const double *values, int items_per_group, int groups, double group_height, double y0, igpBarGroupsFlags flags);
+
+
 #ifdef __cplusplus
 }
 #endif

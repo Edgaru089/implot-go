@@ -125,8 +125,8 @@ const (
 
 // Flags for PlotBarGroups
 const (
-	BarGroupsFlags_None    BarGroupsFlags = 0         // default
-	BarGroupsFlags_Stacked                = 1 << iota // items in a group will be stacked on top of each other
+	BarGroupsFlags_Stacked BarGroupsFlags = 1 << iota // items in a group will be stacked on top of each other
+	BarGroupsFlags_None                   = 0         // default
 )
 
 // Represents a condition for SetupAxisLimits etc. (a subset of imgui.Cond)
