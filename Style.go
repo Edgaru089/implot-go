@@ -13,22 +13,22 @@ import (
 //
 // Right now this struct doesn't have much point, since there's only one
 // style (the global one) accessible, and you can't create any.
-type Style struct {
+type PlotStyle struct {
 	handle C.igpStyle
 }
 
 // CurrentStyle returns a handle to the global Style.
-func CurrentStyle() Style {
-	return Style{handle: C.igpGetStyle()}
+func CurrentPlotStyle() PlotStyle {
+	return PlotStyle{handle: C.igpGetStyle()}
 }
 
 // Color returns one of the Colors of the style.
-func (s Style) Color(color StyleCol) imgui.Vec4 {
+func (s PlotStyle) PlotColor(color PlotStyleCol) imgui.Vec4 {
 	return unwrapVec4(C.igpStyleGetColor(s.handle, C.igpStyleCol(color)))
 }
 
 // SetColor sets one of the Colors of the style.
-func (s Style) SetColor(color StyleCol, to imgui.Vec4) {
+func (s PlotStyle) SetColor(color PlotStyleCol, to imgui.Vec4) {
 	C.igpStyleSetColor(s.handle, C.igpStyleCol(color), wrapVec4(to))
 }
 
@@ -45,219 +45,219 @@ func convFloat32(val interface{}, panicmsg interface{}) float32 {
 
 // Var returns one of the variables of the style.
 // Returns either a float32, a imgui.Vec2, or a int.
-func (s Style) Var(v StyleVar) interface{} {
+func (s PlotStyle) Var(v PlotStyleVar) interface{} {
 	switch v {
 	case // Float
-		StyleVar_LineWeight,
-		StyleVar_MarkerSize,
-		StyleVar_MarkerWeight,
-		StyleVar_FillAlpha,
-		StyleVar_ErrorBarSize,
-		StyleVar_ErrorBarWeight,
-		StyleVar_DigitalBitHeight,
-		StyleVar_DigitalBitGap,
-		StyleVar_PlotBorderSize,
-		StyleVar_MinorAlpha:
+		PlotStyleVar_LineWeight,
+		PlotStyleVar_MarkerSize,
+		PlotStyleVar_MarkerWeight,
+		PlotStyleVar_FillAlpha,
+		PlotStyleVar_ErrorBarSize,
+		PlotStyleVar_ErrorBarWeight,
+		PlotStyleVar_DigitalBitHeight,
+		PlotStyleVar_DigitalBitGap,
+		PlotStyleVar_PlotBorderSize,
+		PlotStyleVar_MinorAlpha:
 		return s.VarFloat(v)
 	case // ImVec2
-		StyleVar_MajorTickLen,
-		StyleVar_MinorTickLen,
-		StyleVar_MajorTickSize,
-		StyleVar_MinorTickSize,
-		StyleVar_MajorGridSize,
-		StyleVar_MinorGridSize,
-		StyleVar_PlotPadding,
-		StyleVar_LabelPadding,
-		StyleVar_LegendPadding,
-		StyleVar_LegendInnerPadding,
-		StyleVar_LegendSpacing,
-		StyleVar_MousePosPadding,
-		StyleVar_AnnotationPadding,
-		StyleVar_FitPadding,
-		StyleVar_PlotDefaultSize,
-		StyleVar_PlotMinSize:
+		PlotStyleVar_MajorTickLen,
+		PlotStyleVar_MinorTickLen,
+		PlotStyleVar_MajorTickSize,
+		PlotStyleVar_MinorTickSize,
+		PlotStyleVar_MajorGridSize,
+		PlotStyleVar_MinorGridSize,
+		PlotStyleVar_PlotPadding,
+		PlotStyleVar_LabelPadding,
+		PlotStyleVar_LegendPadding,
+		PlotStyleVar_LegendInnerPadding,
+		PlotStyleVar_LegendSpacing,
+		PlotStyleVar_MousePosPadding,
+		PlotStyleVar_AnnotationPadding,
+		PlotStyleVar_FitPadding,
+		PlotStyleVar_PlotDefaultSize,
+		PlotStyleVar_PlotMinSize:
 		return s.VarVec2(v)
 	case // Int
-		StyleVar_Marker:
+		PlotStyleVar_Marker:
 		return s.VarInt(v)
 	}
-	panic(fmt.Errorf("unknown StyleVar %d", v))
+	panic(fmt.Errorf("unknown PlotStyleVar %d", v))
 }
 
 // SetVar sets one of the variables of the style.
 //
 // #to must be either a float32, a imgui.Vec2, or a int.
 // If the types mismatch, it panics.
-func (s Style) SetVar(v StyleVar, to interface{}) {
+func (s PlotStyle) SetVar(v PlotStyleVar, to interface{}) {
 	switch v {
 	case // Float
-		StyleVar_LineWeight,
-		StyleVar_MarkerSize,
-		StyleVar_MarkerWeight,
-		StyleVar_FillAlpha,
-		StyleVar_ErrorBarSize,
-		StyleVar_ErrorBarWeight,
-		StyleVar_DigitalBitHeight,
-		StyleVar_DigitalBitGap,
-		StyleVar_PlotBorderSize,
-		StyleVar_MinorAlpha:
-		s.SetVarFloat(v, convFloat32(to, "StyleVar/value type mismatch"))
+		PlotStyleVar_LineWeight,
+		PlotStyleVar_MarkerSize,
+		PlotStyleVar_MarkerWeight,
+		PlotStyleVar_FillAlpha,
+		PlotStyleVar_ErrorBarSize,
+		PlotStyleVar_ErrorBarWeight,
+		PlotStyleVar_DigitalBitHeight,
+		PlotStyleVar_DigitalBitGap,
+		PlotStyleVar_PlotBorderSize,
+		PlotStyleVar_MinorAlpha:
+		s.SetVarFloat(v, convFloat32(to, "PlotStyleVar/value type mismatch"))
 	case // ImVec2
-		StyleVar_MajorTickLen,
-		StyleVar_MinorTickLen,
-		StyleVar_MajorTickSize,
-		StyleVar_MinorTickSize,
-		StyleVar_MajorGridSize,
-		StyleVar_MinorGridSize,
-		StyleVar_PlotPadding,
-		StyleVar_LabelPadding,
-		StyleVar_LegendPadding,
-		StyleVar_LegendInnerPadding,
-		StyleVar_LegendSpacing,
-		StyleVar_MousePosPadding,
-		StyleVar_AnnotationPadding,
-		StyleVar_FitPadding,
-		StyleVar_PlotDefaultSize,
-		StyleVar_PlotMinSize:
+		PlotStyleVar_MajorTickLen,
+		PlotStyleVar_MinorTickLen,
+		PlotStyleVar_MajorTickSize,
+		PlotStyleVar_MinorTickSize,
+		PlotStyleVar_MajorGridSize,
+		PlotStyleVar_MinorGridSize,
+		PlotStyleVar_PlotPadding,
+		PlotStyleVar_LabelPadding,
+		PlotStyleVar_LegendPadding,
+		PlotStyleVar_LegendInnerPadding,
+		PlotStyleVar_LegendSpacing,
+		PlotStyleVar_MousePosPadding,
+		PlotStyleVar_AnnotationPadding,
+		PlotStyleVar_FitPadding,
+		PlotStyleVar_PlotDefaultSize,
+		PlotStyleVar_PlotMinSize:
 		if vt, ok := to.(imgui.Vec2); ok {
 			s.SetVarVec2(v, vt)
 		} else {
-			panic("StyleVar/value type mismatch")
+			panic("PlotStyleVar/value type mismatch")
 		}
 	case // Int
-		StyleVar_Marker:
+		PlotStyleVar_Marker:
 		if vt, ok := to.(int); ok {
 			s.SetVarInt(v, vt)
 		} else {
-			panic("StyleVar/value type mismatch")
+			panic("PlotStyleVar/value type mismatch")
 		}
 	default:
-		panic(fmt.Errorf("unknown StyleVar %d", v))
+		panic(fmt.Errorf("unknown PlotStyleVar %d", v))
 	}
 }
 
 // VarFloat returns a float style variable.
 // If v is not a float, it panics.
-func (s Style) VarFloat(v StyleVar) float32 {
+func (s PlotStyle) VarFloat(v PlotStyleVar) float32 {
 	return float32(C.igpStyleGetVarFloat(s.handle, C.igpStyleVar(v)))
 }
 
 // VarVec2 returns a ImVec2 style variable.
 // If v is not a float, it panics.
-func (s Style) VarVec2(v StyleVar) imgui.Vec2 {
+func (s PlotStyle) VarVec2(v PlotStyleVar) imgui.Vec2 {
 	return unwrapVec2(C.igpStyleGetVarVec2(s.handle, C.igpStyleVar(v)))
 }
 
 // VarInt returns a int style variable.
 // If v is not a float, it panics.
-func (s Style) VarInt(v StyleVar) int {
+func (s PlotStyle) VarInt(v PlotStyleVar) int {
 	return int(C.igpStyleGetVarInt(s.handle, C.igpStyleVar(v)))
 }
 
 // SetVarFloat sets a float style variable.
-func (s Style) SetVarFloat(v StyleVar, to float32) {
+func (s PlotStyle) SetVarFloat(v PlotStyleVar, to float32) {
 	C.igpStyleSetVarFloat(s.handle, C.igpStyleVar(v), C.float(to))
 }
 
 // SetVarVec2 sets a ImVec2 style variable.
-func (s Style) SetVarVec2(v StyleVar, to imgui.Vec2) {
+func (s PlotStyle) SetVarVec2(v PlotStyleVar, to imgui.Vec2) {
 	C.igpStyleSetVarVec2(s.handle, C.igpStyleVar(v), wrapVec2(to))
 }
 
 // SetVarInt sets a int style variable.
-func (s Style) SetVarInt(v StyleVar, to int) {
+func (s PlotStyle) SetVarInt(v PlotStyleVar, to int) {
 	C.igpStyleSetVarInt(s.handle, C.igpStyleVar(v), C.int(to))
 }
 
-// StyleColorsAuto sets all global style colors to be automatically deduced
+// PlotStyleColorsAuto sets all global style colors to be automatically deduced
 // from the current ImGui style.
-func StyleColorsAuto() {
+func PlotStyleColorsAuto() {
 	C.igpStyleColorsAuto(nil)
 }
 
-// StyleColorsClassic sets the global style colors to mimic
+// PlotStyleColorsClassic sets the global style colors to mimic
 // the ImGui "Classic" style.
-func StyleColorsClassic() {
+func PlotStyleColorsClassic() {
 	C.igpStyleColorsClassic(nil)
 }
 
-// StyleColorsDark sets the global style colors to mimic
+// PlotStyleColorsDark sets the global style colors to mimic
 // the ImGui "Dark" style.
-func StyleColorsDark() {
+func PlotStyleColorsDark() {
 	C.igpStyleColorsDark(nil)
 }
 
-// StyleColorsLight sets the global style colors to mimic
+// PlotStyleColorsLight sets the global style colors to mimic
 // the ImGui "Light" style.
-func StyleColorsLight() {
+func PlotStyleColorsLight() {
 	C.igpStyleColorsLight(nil)
 }
 
-// PushStyleColor pushes the given color onto the stack.
+// PushPlotStyleColor pushes the given color onto the stack.
 //
 // You MUST call a pop for every push, otherwise you will leak memory!
 // This behaves just like ImGui itself.
-func PushStyleColor(id StyleCol, color imgui.Vec4) {
+func PushPlotStyleColor(id PlotStyleCol, color imgui.Vec4) {
 	C.igpPushStyleColor(C.igpStyleCol(id), wrapVec4(color))
 }
 
-// PopStyleColor pops one color off the style stack.
+// PopPlotStyleColor pops one color off the style stack.
 // It calls PopStyleColorV(1).
-func PopStyleColor() {
+func PopPlotStyleColor() {
 	C.igpPopStyleColor(1)
 }
 
-// PopStyleColorV pops #count colors off the stack.
-func PopStyleColorV(count int) {
+// PopPlotStyleColorV pops #count colors off the stack.
+func PopPlotStyleColorV(count int) {
 	C.igpPopStyleColor(C.int(count))
 }
 
-// PushStyleVar pushes a given style variable onto the stack.
+// PushPlotStyleVar pushes a given style variable onto the stack.
 //
 // If the types of #v and #val mismatch, it panics.
 //
 // You MUST call a pop for every push, otherwise you will leak memory!
 // This behaves just like ImGui itself.
-func PushStyleVar(v StyleVar, val interface{}) {
+func PushPlotStyleVar(v PlotStyleVar, val interface{}) {
 	switch v {
 	case // Float
-		StyleVar_LineWeight,
-		StyleVar_MarkerSize,
-		StyleVar_MarkerWeight,
-		StyleVar_FillAlpha,
-		StyleVar_ErrorBarSize,
-		StyleVar_ErrorBarWeight,
-		StyleVar_DigitalBitHeight,
-		StyleVar_DigitalBitGap,
-		StyleVar_PlotBorderSize,
-		StyleVar_MinorAlpha:
-		PushStyleVarFloat(v, convFloat32(val, "StyleVar/value type mismatch"))
+		PlotStyleVar_LineWeight,
+		PlotStyleVar_MarkerSize,
+		PlotStyleVar_MarkerWeight,
+		PlotStyleVar_FillAlpha,
+		PlotStyleVar_ErrorBarSize,
+		PlotStyleVar_ErrorBarWeight,
+		PlotStyleVar_DigitalBitHeight,
+		PlotStyleVar_DigitalBitGap,
+		PlotStyleVar_PlotBorderSize,
+		PlotStyleVar_MinorAlpha:
+		PushPlotStyleVarFloat(v, convFloat32(val, "StyleVar/value type mismatch"))
 	case // ImVec2
-		StyleVar_MajorTickLen,
-		StyleVar_MinorTickLen,
-		StyleVar_MajorTickSize,
-		StyleVar_MinorTickSize,
-		StyleVar_MajorGridSize,
-		StyleVar_MinorGridSize,
-		StyleVar_PlotPadding,
-		StyleVar_LabelPadding,
-		StyleVar_LegendPadding,
-		StyleVar_LegendInnerPadding,
-		StyleVar_LegendSpacing,
-		StyleVar_MousePosPadding,
-		StyleVar_AnnotationPadding,
-		StyleVar_FitPadding,
-		StyleVar_PlotDefaultSize,
-		StyleVar_PlotMinSize:
+		PlotStyleVar_MajorTickLen,
+		PlotStyleVar_MinorTickLen,
+		PlotStyleVar_MajorTickSize,
+		PlotStyleVar_MinorTickSize,
+		PlotStyleVar_MajorGridSize,
+		PlotStyleVar_MinorGridSize,
+		PlotStyleVar_PlotPadding,
+		PlotStyleVar_LabelPadding,
+		PlotStyleVar_LegendPadding,
+		PlotStyleVar_LegendInnerPadding,
+		PlotStyleVar_LegendSpacing,
+		PlotStyleVar_MousePosPadding,
+		PlotStyleVar_AnnotationPadding,
+		PlotStyleVar_FitPadding,
+		PlotStyleVar_PlotDefaultSize,
+		PlotStyleVar_PlotMinSize:
 		if valtype, ok := val.(imgui.Vec2); ok {
-			PushStyleVarVec2(v, valtype)
+			PushPlotStyleVarVec2(v, valtype)
 		} else {
 			panic("StyleVar/value type mismatch")
 		}
 	case // Int
-		StyleVar_Marker:
+		PlotStyleVar_Marker:
 		if valtype, ok := val.(int); ok {
-			PushStyleVarInt(v, valtype)
+			PushPlotStyleVarInt(v, valtype)
 		} else {
 			panic("StyleVar/value type mismatch")
 		}
@@ -266,44 +266,44 @@ func PushStyleVar(v StyleVar, val interface{}) {
 	}
 }
 
-// PushStyleVarFloat pushes a given style variable of float onto the stack.
+// PushPlotStyleVarFloat pushes a given style variable of float onto the stack.
 //
 // If the type of #v mismatch, it panics.
 //
 // You MUST call a pop for every push, otherwise you will leak memory!
 // This behaves just like ImGui itself.
-func PushStyleVarFloat(v StyleVar, val float32) {
+func PushPlotStyleVarFloat(v PlotStyleVar, val float32) {
 	C.igpPushStyleVarFloat(C.igpStyleVar(v), C.float(val))
 }
 
-// PushStyleVarVec2 pushes a given style variable of ImVec2 onto the stack.
+// PushPlotStyleVarVec2 pushes a given style variable of ImVec2 onto the stack.
 //
 // If the type of #v mismatch, it panics.
 //
 // You MUST call a pop for every push, otherwise you will leak memory!
 // This behaves just like ImGui itself.
-func PushStyleVarVec2(v StyleVar, val imgui.Vec2) {
+func PushPlotStyleVarVec2(v PlotStyleVar, val imgui.Vec2) {
 	C.igpPushStyleVarVec2(C.igpStyleVar(v), wrapVec2(val))
 }
 
-// PushStyleVarInt pushes a given style variable of int onto the stack.
+// PushPlotStyleVarInt pushes a given style variable of int onto the stack.
 //
 // If the type of #v mismatch, it panics.
 //
 // You MUST call a pop for every push, otherwise you will leak memory!
 // This behaves just like ImGui itself.
-func PushStyleVarInt(v StyleVar, val int) {
+func PushPlotStyleVarInt(v PlotStyleVar, val int) {
 	C.igpPushStyleVarInt(C.igpStyleVar(v), C.int(val))
 }
 
-// PopStyleVar pops one variable off the stack.
-// It calls PopStyleVarV(1).
-func PopStyleVar() {
+// PopPlotStyleVar pops one variable off the stack.
+// It calls PopPlotStyleVarV(1).
+func PopPlotStyleVar() {
 	C.igpPopStyleVar(1)
 }
 
-// PopStyleVarV pops #count variables off the stack.
-func PopStyleVarV(count int) {
+// PopPlotStyleVarV pops #count variables off the stack.
+func PopPlotStyleVarV(count int) {
 	C.igpPopStyleVar(C.int(count))
 }
 
@@ -344,7 +344,7 @@ func GetLastItemColor() imgui.Vec4 {
 	return unwrapVec4((C.igpGetLastItemColor)())
 }
 
-var styleColNames = [StyleCol_Count]string{
+var styleColNames = [PlotStyleCol_Count]string{
 	"Line",
 	"Fill",
 	"MarkerOutline",
@@ -369,7 +369,7 @@ var styleColNames = [StyleCol_Count]string{
 }
 
 // GetStyleColorName returns the name of a style color.
-func GetStyleColorName(id StyleCol) string {
+func GetPlotStyleColorName(id PlotStyleCol) string {
 	return styleColNames[id]
 }
 

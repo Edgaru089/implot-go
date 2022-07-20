@@ -27,7 +27,7 @@ import (
 //    The default size of plots (i.e. when ImVec2(0,0)) can be modified
 //    in your ImPlotStyle.
 func BeginPlot(title string) bool {
-	return BeginPlotV(title, imgui.Vec2{X: -1, Y: 0}, Flags_None)
+	return BeginPlotV(title, imgui.Vec2{X: -1, Y: 0}, PlotFlags_None)
 }
 
 // BeginPlotV starts a 2D plotting context with all the parameters specified.
@@ -46,7 +46,7 @@ func BeginPlot(title string) bool {
 //  - size is the **frame** size of the plot widget, not the plot area.
 //    The default size of plots (i.e. when ImVec2(0,0)) can be modified
 //    in your ImPlotStyle.
-func BeginPlotV(title string, size imgui.Vec2, flags Flags) bool {
+func BeginPlotV(title string, size imgui.Vec2, flags PlotFlags) bool {
 	ctitle := C.CString(title)
 	defer C.free(unsafe.Pointer(ctitle))
 	return bool(C.igpBeginPlot(ctitle, wrapVec2(size), C.igpFlags(flags)))

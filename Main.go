@@ -3,13 +3,13 @@ package implot
 // #include "wrapper/Main.h"
 import "C"
 
-// Version returns a version string, e.g., "0.13 WIP".
-func Version() string {
+// PlotVersion returns a version string for ImPlot, e.g., "0.13 WIP".
+func PlotVersion() string {
 	return C.GoString(C.igpMain_Version())
 }
 
-// ShowDemoWindow shows the ImPlot demo window.
-func ShowDemoWindow(open *bool) {
+// ShowPlotDemoWindow shows the ImPlot demo window.
+func ShowPlotDemoWindow(open *bool) {
 	if open == nil {
 		C.igpShowDemoWindow(nil)
 	} else {

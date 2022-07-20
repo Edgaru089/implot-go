@@ -10,7 +10,7 @@ var Auto float32 = -1
 var AutoColor = imgui.Vec4{X: 0, Y: 0, Z: 0, W: -1}
 
 type Axis C.int           // Axis indices
-type Flags C.int          // Flags for plots / BeginPlot
+type PlotFlags C.int      // Flags for plots / BeginPlot
 type AxisFlags C.int      // Flags for plot axes / SetupAxis
 type SubplotFlags C.int   // Flags for subplots / BeginSubplot
 type LegendFlags C.int    // Flags for legends / SetupLegend
@@ -18,13 +18,13 @@ type MouseTextFlags C.int // Flags for mouse hover text / SetupMouseText
 type DragToolFlags C.int  // Flags for DragPoint, DragLine, DragRect
 type BarGroupsFlags C.int // Flags for PlotBarGroups
 
-type Condition C.int // Represents a condition for SetupAxisLimits etc. (a subset of imgui.Cond)
-type StyleCol C.int  // Plot styling colors
-type StyleVar C.int  // Plot styling variables
-type Marker C.int    // Markers
-type Colormap C.int  // Built-in colormaps
-type Location C.int  // Locations used to position items on a plot
-type Bin C.int       // Different automatic histogram binning methods
+type Cond C.int         // Represents a condition for SetupAxisLimits etc. (a subset of imgui.Cond)
+type PlotStyleCol C.int // Plot styling colors
+type PlotStyleVar C.int // Plot styling variables
+type Marker C.int       // Markers
+type Colormap C.int     // Built-in colormaps
+type Location C.int     // Locations used to position items on a plot
+type Bin C.int          // Different automatic histogram binning methods
 
 // Axis indices. The values assigned may change; NEVER hardcode these.
 const (
@@ -39,20 +39,20 @@ const (
 
 // Flags for plots / BeginPlot
 const (
-	Flags_NoTitle     Flags = 1 << iota // the plot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MyPlot")
-	Flags_NoLegend                      // the legend will not be displayed
-	Flags_NoMouseText                   // the mouse position, in plot coordinates, will not be displayed inside of the plot
-	Flags_NoInputs                      // the user will not be able to interact with the plot
-	Flags_NoMenus                       // the user will not be able to open context menus
-	Flags_NoBoxSelect                   // the user will not be able to box-select
-	Flags_NoChild                       // a child window region will not be used to capture mouse scroll (can boost performance for single ImGui window applications)
-	Flags_NoFrame                       // the ImGui frame will not be rendered
-	Flags_Equal                         // x and y axes pairs will be constrained to have the same units/pixel
-	Flags_Crosshairs                    // the default mouse cursor will be replaced with a crosshair when hovered
-	Flags_AntiAliased                   // plot items will be software anti-aliased (not recommended for high density plots, prefer MSAA)
+	PlotFlags_NoTitle     PlotFlags = 1 << iota // the plot title will not be displayed (titles are also hidden if preceeded by double hashes, e.g. "##MyPlot")
+	PlotFlags_NoLegend                          // the legend will not be displayed
+	PlotFlags_NoMouseText                       // the mouse position, in plot coordinates, will not be displayed inside of the plot
+	PlotFlags_NoInputs                          // the user will not be able to interact with the plot
+	PlotFlags_NoMenus                           // the user will not be able to open context menus
+	PlotFlags_NoBoxSelect                       // the user will not be able to box-select
+	PlotFlags_NoChild                           // a child window region will not be used to capture mouse scroll (can boost performance for single ImGui window applications)
+	PlotFlags_NoFrame                           // the ImGui frame will not be rendered
+	PlotFlags_Equal                             // x and y axes pairs will be constrained to have the same units/pixel
+	PlotFlags_Crosshairs                        // the default mouse cursor will be replaced with a crosshair when hovered
+	PlotFlags_AntiAliased                       // plot items will be software anti-aliased (not recommended for high density plots, prefer MSAA)
 
-	Flags_None       = 0 // default
-	Flags_CanvasOnly = Flags_NoTitle | Flags_NoLegend | Flags_NoMenus | Flags_NoBoxSelect | Flags_NoMouseText
+	PlotFlags_None       = 0 // default
+	PlotFlags_CanvasOnly = PlotFlags_NoTitle | PlotFlags_NoLegend | PlotFlags_NoMenus | PlotFlags_NoBoxSelect | PlotFlags_NoMouseText
 )
 
 // Flags for plot axes / SetupAxis
@@ -130,72 +130,72 @@ const (
 )
 
 // Represents a condition for SetupAxisLimits etc. (a subset of imgui.Cond)
-const (
+/*const (
 	Condition_None   = Condition(imgui.ConditionNone)   // No condition (always set the variable), same as _Always
 	Condition_Always = Condition(imgui.ConditionAlways) // No condition (always set the variable)
 	Condition_Once   = Condition(imgui.ConditionOnce)   // Set the variable once per runtime session (only the first call will succeed)
-)
+)*/
 
 // Plot styling colors
 const (
 	// item styling colors
-	StyleCol_Line          StyleCol = iota // plot line/outline color (defaults to next unused color in current colormap)
-	StyleCol_Fill                          // plot fill color for bars (defaults to the current line color)
-	StyleCol_MarkerOutline                 // marker outline color (defaults to the current line color)
-	StyleCol_MarkerFill                    // marker fill color (defaults to the current line color)
-	StyleCol_ErrorBar                      // error bar color (defaults to ImGuiCol_Text)
+	PlotStyleCol_Line          PlotStyleCol = iota // plot line/outline color (defaults to next unused color in current colormap)
+	PlotStyleCol_Fill                              // plot fill color for bars (defaults to the current line color)
+	PlotStyleCol_MarkerOutline                     // marker outline color (defaults to the current line color)
+	PlotStyleCol_MarkerFill                        // marker fill color (defaults to the current line color)
+	PlotStyleCol_ErrorBar                          // error bar color (defaults to ImGuiCol_Text)
 	// plot styling colors
-	StyleCol_FrameBg       // plot frame background color (defaults to ImGuiCol_FrameBg)
-	StyleCol_PlotBg        // plot area background color (defaults to ImGuiCol_WindowBg)
-	StyleCol_PlotBorder    // plot area border color (defaults to ImGuiCol_Border)
-	StyleCol_LegendBg      // legend background color (defaults to ImGuiCol_PopupBg)
-	StyleCol_LegendBorder  // legend border color (defaults to ImPlotCol_PlotBorder)
-	StyleCol_LegendText    // legend text color (defaults to ImPlotCol_InlayText)
-	StyleCol_TitleText     // plot title text color (defaults to ImGuiCol_Text)
-	StyleCol_InlayText     // color of text appearing inside of plots (defaults to ImGuiCol_Text)
-	StyleCol_AxisText      // axis label and tick lables color (defaults to ImGuiCol_Text)
-	StyleCol_AxisGrid      // axis grid color (defaults to 25% ImPlotCol_AxisText)
-	StyleCol_AxisTick      // axis tick color (defaults to AxisGrid)
-	StyleCol_AxisBg        // background color of axis hover region (defaults to transparent)
-	StyleCol_AxisBgHovered // axis hover color (defaults to ImGuiCol_ButtonHovered)
-	StyleCol_AxisBgActive  // axis active color (defaults to ImGuiCol_ButtonActive)
-	StyleCol_Selection     // box-selection color (defaults to yellow)
-	StyleCol_Crosshairs    // crosshairs color (defaults to ImPlotCol_PlotBorder)
-	StyleCol_Count
+	PlotStyleCol_FrameBg       // plot frame background color (defaults to ImGuiCol_FrameBg)
+	PlotStyleCol_PlotBg        // plot area background color (defaults to ImGuiCol_WindowBg)
+	PlotStyleCol_PlotBorder    // plot area border color (defaults to ImGuiCol_Border)
+	PlotStyleCol_LegendBg      // legend background color (defaults to ImGuiCol_PopupBg)
+	PlotStyleCol_LegendBorder  // legend border color (defaults to ImPlotCol_PlotBorder)
+	PlotStyleCol_LegendText    // legend text color (defaults to ImPlotCol_InlayText)
+	PlotStyleCol_TitleText     // plot title text color (defaults to ImGuiCol_Text)
+	PlotStyleCol_InlayText     // color of text appearing inside of plots (defaults to ImGuiCol_Text)
+	PlotStyleCol_AxisText      // axis label and tick lables color (defaults to ImGuiCol_Text)
+	PlotStyleCol_AxisGrid      // axis grid color (defaults to 25% ImPlotCol_AxisText)
+	PlotStyleCol_AxisTick      // axis tick color (defaults to AxisGrid)
+	PlotStyleCol_AxisBg        // background color of axis hover region (defaults to transparent)
+	PlotStyleCol_AxisBgHovered // axis hover color (defaults to ImGuiCol_ButtonHovered)
+	PlotStyleCol_AxisBgActive  // axis active color (defaults to ImGuiCol_ButtonActive)
+	PlotStyleCol_Selection     // box-selection color (defaults to yellow)
+	PlotStyleCol_Crosshairs    // crosshairs color (defaults to ImPlotCol_PlotBorder)
+	PlotStyleCol_Count
 )
 
 // Plot styling variables
 const (
 	// item styling variables
-	StyleVar_LineWeight       StyleVar = iota // float,  plot item line weight in pixels
-	StyleVar_Marker                           // int,    marker specification
-	StyleVar_MarkerSize                       // float,  marker size in pixels (roughly the marker's "radius")
-	StyleVar_MarkerWeight                     // float,  plot outline weight of markers in pixels
-	StyleVar_FillAlpha                        // float,  alpha modifier applied to all plot item fills
-	StyleVar_ErrorBarSize                     // float,  error bar whisker width in pixels
-	StyleVar_ErrorBarWeight                   // float,  error bar whisker weight in pixels
-	StyleVar_DigitalBitHeight                 // float,  digital channels bit height (at 1) in pixels
-	StyleVar_DigitalBitGap                    // float,  digital channels bit padding gap in pixels
+	PlotStyleVar_LineWeight       PlotStyleVar = iota // float,  plot item line weight in pixels
+	PlotStyleVar_Marker                               // int,    marker specification
+	PlotStyleVar_MarkerSize                           // float,  marker size in pixels (roughly the marker's "radius")
+	PlotStyleVar_MarkerWeight                         // float,  plot outline weight of markers in pixels
+	PlotStyleVar_FillAlpha                            // float,  alpha modifier applied to all plot item fills
+	PlotStyleVar_ErrorBarSize                         // float,  error bar whisker width in pixels
+	PlotStyleVar_ErrorBarWeight                       // float,  error bar whisker weight in pixels
+	PlotStyleVar_DigitalBitHeight                     // float,  digital channels bit height (at 1) in pixels
+	PlotStyleVar_DigitalBitGap                        // float,  digital channels bit padding gap in pixels
 	// plot styling variables
-	StyleVar_PlotBorderSize     // float,  thickness of border around plot area
-	StyleVar_MinorAlpha         // float,  alpha multiplier applied to minor axis grid lines
-	StyleVar_MajorTickLen       // ImVec2, major tick lengths for X and Y axes
-	StyleVar_MinorTickLen       // ImVec2, minor tick lengths for X and Y axes
-	StyleVar_MajorTickSize      // ImVec2, line thickness of major ticks
-	StyleVar_MinorTickSize      // ImVec2, line thickness of minor ticks
-	StyleVar_MajorGridSize      // ImVec2, line thickness of major grid lines
-	StyleVar_MinorGridSize      // ImVec2, line thickness of minor grid lines
-	StyleVar_PlotPadding        // ImVec2, padding between widget frame and plot area, labels, or outside legends (i.e. main padding)
-	StyleVar_LabelPadding       // ImVec2, padding between axes labels, tick labels, and plot edge
-	StyleVar_LegendPadding      // ImVec2, legend padding from plot edges
-	StyleVar_LegendInnerPadding // ImVec2, legend inner padding from legend edges
-	StyleVar_LegendSpacing      // ImVec2, spacing between legend entries
-	StyleVar_MousePosPadding    // ImVec2, padding between plot edge and interior info text
-	StyleVar_AnnotationPadding  // ImVec2, text padding around annotation labels
-	StyleVar_FitPadding         // ImVec2, additional fit padding as a percentage of the fit extents (e.g. ImVec2(0.1f,0.1f) adds 10% to the fit extents of X and Y)
-	StyleVar_PlotDefaultSize    // ImVec2, default size used when ImVec2(0,0) is passed to BeginPlot
-	StyleVar_PlotMinSize        // ImVec2, minimum size plot frame can be when shrunk
-	StyleVar_Count
+	PlotStyleVar_PlotBorderSize     // float,  thickness of border around plot area
+	PlotStyleVar_MinorAlpha         // float,  alpha multiplier applied to minor axis grid lines
+	PlotStyleVar_MajorTickLen       // ImVec2, major tick lengths for X and Y axes
+	PlotStyleVar_MinorTickLen       // ImVec2, minor tick lengths for X and Y axes
+	PlotStyleVar_MajorTickSize      // ImVec2, line thickness of major ticks
+	PlotStyleVar_MinorTickSize      // ImVec2, line thickness of minor ticks
+	PlotStyleVar_MajorGridSize      // ImVec2, line thickness of major grid lines
+	PlotStyleVar_MinorGridSize      // ImVec2, line thickness of minor grid lines
+	PlotStyleVar_PlotPadding        // ImVec2, padding between widget frame and plot area, labels, or outside legends (i.e. main padding)
+	PlotStyleVar_LabelPadding       // ImVec2, padding between axes labels, tick labels, and plot edge
+	PlotStyleVar_LegendPadding      // ImVec2, legend padding from plot edges
+	PlotStyleVar_LegendInnerPadding // ImVec2, legend inner padding from legend edges
+	PlotStyleVar_LegendSpacing      // ImVec2, spacing between legend entries
+	PlotStyleVar_MousePosPadding    // ImVec2, padding between plot edge and interior info text
+	PlotStyleVar_AnnotationPadding  // ImVec2, text padding around annotation labels
+	PlotStyleVar_FitPadding         // ImVec2, additional fit padding as a percentage of the fit extents (e.g. ImVec2(0.1f,0.1f) adds 10% to the fit extents of X and Y)
+	PlotStyleVar_PlotDefaultSize    // ImVec2, default size used when ImVec2(0,0) is passed to BeginPlot
+	PlotStyleVar_PlotMinSize        // ImVec2, minimum size plot frame can be when shrunk
+	PlotStyleVar_Count
 )
 
 // Markers

@@ -54,7 +54,7 @@ func SetupAxis(axis Axis, label string, flags AxisFlags) {
 // If ImPlotCond_Always is used, the axes limits will be locked.
 //
 // Note that SetupAxisLinks() is absent. I don't really know how to implement that.
-func SetupAxisLimits(axis Axis, vmin, vmax float64, cond Condition) {
+func SetupAxisLimits(axis Axis, vmin, vmax float64, cond Cond) {
 	C.igpSetupAxisLimits(C.igpAxis(axis), C.double(vmin), C.double(vmax), C.igpCondition(cond))
 }
 
@@ -146,7 +146,7 @@ func SetupAxes(xlabel, ylabel string, xflags, yflags AxisFlags) {
 // SetupAxesLimits sets the primary X and Y axes range limits.
 // If ImPlotCond_Always is used, the axes limits will be locked.
 // (shorthand for two calls to SetupAxisLimits)
-func SetupAxesLimits(xmin, xmax, ymin, ymax float64, cond Condition) {
+func SetupAxesLimits(xmin, xmax, ymin, ymax float64, cond Cond) {
 	C.igpSetupAxesLimits(C.double(xmin), C.double(xmax), C.double(ymin), C.double(ymax), C.igpCondition(cond))
 }
 
