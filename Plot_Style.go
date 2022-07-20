@@ -1,6 +1,6 @@
 package implot
 
-// #include "wrapper/Style.h"
+// #include "plot_wrapper/Style.h"
 import "C"
 import (
 	"fmt"

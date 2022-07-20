@@ -1,7 +1,7 @@
 package implot
 
 // #include <stdlib.h>
-// #include "wrapper/Plot.h"
+// #include "plot_wrapper/Plot.h"
 import "C"
 import (
 	"math"

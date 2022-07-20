@@ -2,7 +2,7 @@ package implot
 
 // #include <stdlib.h>
 // #include <string.h>
-// #include "wrapper/Types.h"
+// #include "plot_wrapper/Types.h"
 import "C"
 import (
 	"reflect"

@@ -1,6 +1,6 @@
 package implot
 
-// #include "wrapper/Contexts.h"
+// #include "plot_wrapper/Contexts.h"
 import "C"
 import (
 	"errors"

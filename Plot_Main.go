@@ -1,6 +1,6 @@
 package implot
 
-// #include "wrapper/Main.h"
+// #include "plot_wrapper/Main.h"
 import "C"
 
 // PlotVersion returns a version string for ImPlot, e.g., "0.13 WIP".

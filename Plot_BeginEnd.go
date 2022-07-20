@@ -1,7 +1,7 @@
 package implot
 
 // #include <stdlib.h>
-// #include "wrapper/BeginEnd.h"
+// #include "plot_wrapper/BeginEnd.h"
 import "C"
 import (
 	"unsafe"

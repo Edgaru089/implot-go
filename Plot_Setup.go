@@ -1,7 +1,7 @@
 package implot
 
 // #include <stdlib.h>
-// #include "wrapper/Setup.h"
+// #include "plot_wrapper/Setup.h"
 import "C"
 import (
 	"fmt"
